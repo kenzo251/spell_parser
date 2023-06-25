@@ -1,0 +1,16 @@
+/*this is a comment; the parser mostly ignores whitespace, this just makes it a bit more readable*/
+
+8_ /*creates a label, comparable to a function, note: labels do currently run by default*/
+	1!15%27 /*spell with id 1*/
+	2!14%26 /*also a spell; properties (property type 15, value 27)*/
+	cond°(true!=1) /*conditional with id "cond" and condition true!=1*/
+		call. /*if branch; only contains call node, calls label named "call"*/
+	: /*end of if branch, followed by else branch*/
+		event# /*event, specific events not implemented yet, event id = "event"*/
+			3!3%test$ /*spell with variable as property value (test$); $ represents variable*/
+			4!5%'test' /*literal as property value, see quotes, "test" also valid*/
+		: /*end of event scope*/
+		5!5%(6+6)$ /* evaluation between brackets possible, can be used as variable*/
+		5!5%(6$)$ /*nested variable reference possible, brackets required*/
+	: /*end of else branch*/
+:/*end of label scope*/
