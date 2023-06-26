@@ -38,6 +38,14 @@ class AST():
 	def setVar(self, varname, value):
 		self.parent.setVar(varname, value)
 	
+	def findLabel(self, labelname):
+		if self.parent == None:
+			raise RuntimeError(f"'{labelname}' is not defined")
+		return self.parent.findLabel(labelname)
+	
+	def setLabel(self, labelname, target):
+		self.parent.setLabel(labelname, target)
+	
 	def nodeTypeInParents(self, nodetype, checkLoop=False):
 		if self.parent==None:
 			return False
@@ -54,6 +62,7 @@ class ScopedAST(AST):
 	def __init__(self):
 		super().__init__()
 		self.vars = {}
+		self.labels = {}
 	
 	def findVar(self, varname):
 		if varname in self.vars:
@@ -64,6 +73,16 @@ class ScopedAST(AST):
 	
 	def setVar(self, varname, value):
 		self.vars[varname]=value
+	
+	def findLabel(self,labelname):
+		if labelname in self.labels:
+			return self.labels[labelname]
+		if self.parent == None:
+			raise RuntimeError(f"'{labelname}' is not defined")
+		return self.parent.findLabel(labelname)
+	
+	def setLabel(self, labelname, target):
+		self.labels[labelname]=target
 
 class PropertyNode(AST):
 	def __init__(self, id):
@@ -91,12 +110,12 @@ class SpellNode(AST):
 		return f"Spell({self.id.id}): "
 	
 	def verifySpecial(self):
-		if len(self.nodes)!=1:
+		if self.id.id==2 and len(self.nodes)!=1:#can't do shit if you're working with self modifying code: aka variable spell id
 			raise SyntaxError("Cannot set multiple control flow states")
 	
 	def simplify(self):
-		self.verifySpecial()
 		self.id = self.id.simplify()
+		self.verifySpecial()
 		for index,node in enumerate(self.nodes):
 			self.nodes[index] = node.simplify()
 		return self

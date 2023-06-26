@@ -115,24 +115,24 @@ class Interpreter():
 	
 	def interpretCall(self, call):
 		id = self.interpretNode(call.id)
-		if id in self.labels:
-			print(f"interpreting for id {id}")
-			self.interpret(self.labels[id]) # watch out for recursive loops
-		else:
-			print(f"raising exception, cannot call non existing method '{id}'")
+		l=call.findLabel(id)
+		print(f"interpreting for id {id}")#debug
+		self.interpret(l)
+		# if id in self.labels:
+			# print(f"interpreting for id {id}")
+			# self.interpret(self.labels[id]) # watch out for recursive loops
+		# else:
+			# print(f"raising exception, cannot call non existing method '{id}'")
 	
 	def interpretEvent(self, event):
-		#register event, some external action should trigger event
+		#register event, some external action should trigger event; therefore events don't need to be scope callable
 		id = self.interpretNode(event.id)
 		self.events[id] = event
 	
 	def interpretLabel(self, label):
 		# needs some scoping work
 		id = self.interpretNode(label.id)
-		if id != "loop":
-			self.labels[f"{id}"] = label
-			# self.interpret(label) #testing
-		else:
+		if id == "loop" and type(label.id)==WordNode: #non wordnode loop is not a valid loop
 			while True:
 				self.interpret(label)
 				if self.state == States.Breaking:
@@ -140,6 +140,11 @@ class Interpreter():
 					break
 				elif self.state == States.Continueing:
 					self.state = States.Normal
+		else:
+			label.parent.setLabel(id, label)
+			#self.labels[f"{id}"] = label
+			# self.interpret(label) #testing
+			
 	
 	def interpretOperator(self, operator):
 		if operator.op != "not":
