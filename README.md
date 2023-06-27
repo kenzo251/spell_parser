@@ -1,6 +1,10 @@
 # spell_parser
 spellparser (hopefully) compatible with codespells's rune design
 
+## what is this project
+this project is made with codespells's design of programmable magic based on a (custom) rune system, therefore this project is my attempt at an underlying parser for such a rune based system  
+read more on https://codespells.org/
+
 ## symbols
 `'text'` text item  
 
@@ -54,3 +58,4 @@ see main.py at the bottom, examples listed (varname "chain")
 
 ## running
 `python main.py`
+t is 
