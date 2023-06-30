@@ -107,10 +107,16 @@ class SpellNode(AST):
 		self.nodes.append(property)
 	
 	def __repr__(self):
-		return f"Spell({self.id.id}): "
-	
+		try:
+			return f"Spell({self.id.id}): "
+		except:
+			if type(self.id)==VariableNode:
+				return f"Spell(Variable: {self.id.nodes[0]})"
+			return f"Spell({self.id.nodes})"
+		
 	def verifySpecial(self):
-		if self.id.id==2 and len(self.nodes)!=1:#can't do shit if you're working with self modifying code: aka variable spell id
+		if type(self.id)!=VariableNode and self.id.id==2 and len(self.nodes)!=1:
+			#can't do shit if you're working with self modifying code: aka variable spell id
 			raise SyntaxError("Cannot set multiple control flow states")
 	
 	def simplify(self):
