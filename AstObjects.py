@@ -140,7 +140,7 @@ class CallNode(AST):
 		self.id = id
 	
 	def __repr__(self):
-		return f"Call({self.id}): "
+		return f"Call({self.id.id}): "
 	
 	def simplify(self):
 		self.id = self.id.simplify()

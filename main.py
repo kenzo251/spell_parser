@@ -295,7 +295,8 @@ def parseBracket(index, token, tokens, stack):
 		evaluation = stack.pop()
 		if type(stack[-1])==BranchNode and len(stack[-1].condition)==0:
 			stack[-1].condition.append(evaluation)
-		elif index+1==len(tokens) or type(tokens[index+1]) not in [Operator, Variable]:
+		elif index+1==len(tokens) or type(tokens[index+1]) not in [Operator, Variable, 
+			Spell, Property, Condition, Event, Label, Call]:
 			stack[-1].addNode(evaluation)
 		else:
 			stack.append(evaluation)
@@ -499,7 +500,7 @@ if __name__=='__main__':
 :/*end of label scope*/
 	"""# explained version (see "parsable spell.txt"); comments do not appear in syntax tree
 	chain = "8_1!15%27 2!14%26cond°(true==false)call.:event#3!3%test$4!5%'test':5!5%(6$)$::" #version with minimal whitespace
-	chain = "1_ 2_ 4! : 2. : 1."
+	# chain = "('test')!"
 	lexerTokens = lexer(chain)
 	ast = parser(lexerTokens)
 	ast.simplify()
