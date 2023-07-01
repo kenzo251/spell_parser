@@ -49,12 +49,6 @@ class Variable (Token):
 	def __repr__(self):
 		return self.__str__()
 
-class WhiteSpace (Token):
-	def __str__(self):
-		return "WhiteSpace"
-	def __repr__(self):
-		return self.__str__()
-
 class Value (Token):
 	def __init__(self):
 		self.value = 0

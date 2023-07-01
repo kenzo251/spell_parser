@@ -344,7 +344,6 @@ class Parser:
 		return (0,0,False)
 	
 	def parse(self, tokens):
-		# tokens = [t for t in tokens if t!=None]
 		stack = []
 		ast = ScopedAST()
 		scopeOpen = 0
