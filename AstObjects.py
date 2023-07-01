@@ -80,12 +80,12 @@ class ScopedAST(AST):
 			self.vars[varname]=value
 			return True
 		if self.parent==None:
-			if canSet:#has not found a better scope candidate
+			if canSet:#check if root is candidate
 				self.vars[varname]=value
-				return True
-			return False #has found better scope candidate, not setting var here
+				return True #if yes, set and end further work
+			return False #root is not candidate
 		
-		earlier_occurence = self.parent.setVar(varname, value, False)
+		earlier_occurence = self.parent.setVar(varname, value, False) # false because this node is earliest candidate, don't assign higher nodes as new candidates
 		if not earlier_occurence and canSet:
 			self.vars[varname]=value
 			return True
