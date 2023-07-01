@@ -266,7 +266,6 @@ class Parser:
 			node.left.append(left)
 			stack.append(node)
 	
-	#WIP
 	def parse_operator_not(self, token, stack):
 		if token.value == "not":
 			# no need to process left operand, adding to value type node causes syntax error anyway
@@ -274,7 +273,6 @@ class Parser:
 			node = OperatorNode(token.value)
 			stack.append(node)
 	
-	#WIP
 	def parse_operator_and(self, token, stack):
 		if type(stack[-2])==OperatorNode and stack[-2] != "or": # or = only operator with lower precedence
 			#yield left operand to other operator (precedence)
@@ -294,7 +292,6 @@ class Parser:
 			stack.append(node)
 		pass
 	
-	#WIP
 	def parse_operator_or(self, token, stack):
 		if type(stack[-2])==OperatorNode: #lowest precedence, always yield if not only operator
 			#yield left operand to other operator (precedence)
@@ -321,7 +318,7 @@ class Parser:
 		stack.append(ast)
 		skipVar = False #used to skip variable token
 		
-		if type(tokens[-1]) == Literal and tokens[-1].value[0]!=tokens[-1].value[-1]:
+		if len(tokens)>0 and type(tokens[-1]) == Literal and tokens[-1].value[0]!=tokens[-1].value[-1]:
 			raise SyntaxError("unclosed Literal")
 		for index, token in enumerate(tokens):
 			if skipVar:
