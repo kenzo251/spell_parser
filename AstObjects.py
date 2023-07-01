@@ -35,8 +35,11 @@ class AST():
 			raise RuntimeError(f"variable referenced before assignment: {varname}")
 		return self.parent.findVar(varname)
 	
-	def setVar(self, varname, value):
-		self.parent.setVar(varname, value)
+	def setVar(self, varname, value, canSet=True):
+		return self.parent.setVar(varname, value, canSet)
+	
+	def delVar(self, varname):
+		self.parent.delVar(varname)
 	
 	def findLabel(self, labelname):
 		if self.parent == None:
@@ -71,8 +74,27 @@ class ScopedAST(AST):
 			raise RuntimeError(f"variable referenced before assignment: {varname}")
 		return self.parent.findVar(varname)
 	
-	def setVar(self, varname, value):
-		self.vars[varname]=value
+	def setVar(self, varname, value, canSet=True):
+		#first find if earlier occurence exists
+		if varname in self.vars:
+			self.vars[varname]=value
+			return True
+		if self.parent==None:
+			if canSet:#has not found a better scope candidate
+				self.vars[varname]=value
+				return True
+			return False #has found better scope candidate, not setting var here
+		
+		earlier_occurence = self.parent.setVar(varname, value, False)
+		if not earlier_occurence and canSet:
+			self.vars[varname]=value
+			return True
+		else:
+			return earlier_occurence
+	
+	def delVar(self,varname):
+		if varname in self.vars:
+			del self.vars['varname']
 	
 	def findLabel(self,labelname):
 		if labelname in self.labels:

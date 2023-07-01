@@ -500,11 +500,13 @@ if __name__=='__main__':
 :/*end of label scope*/
 	"""# explained version (see "parsable spell.txt"); comments do not appear in syntax tree
 	chain = "8_1!15%27 2!14%26cond°(true==false)call.:event#3!3%test$4!5%'test':5!5%(6$)$::" #version with minimal whitespace
-	chain = "(test)$!"
+	chain = "1!1%1 1_ 1!1%2 : 1."
 	lexerTokens = lexer(chain)
 	ast = parser(lexerTokens)
 	ast.simplify()
 	ast.setParentRelations()
-	print(ast)
+	# print(ast)
 	interpreter = Interpreter()
 	interpreter.interpret(ast)
+	print(ast.vars)
+	print(ast.nodes[1].vars)
