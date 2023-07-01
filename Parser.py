@@ -310,7 +310,7 @@ class Parser:
 			node.left.append(left)
 			stack.append(node)
 	
-	def parseToken(self, index, token, tokens, stack):
+	def parseToken(self, index, token, tokens, stack): #returns tuple (scope counter modifier, bracket counter modifier, skip next)
 		if type(token)==Variable:# already processed in token type value
 			self.parseVariable(index, tokens, stack)
 		elif type(token)==Label:
@@ -327,7 +327,7 @@ class Parser:
 		elif type(token)==Literal:
 			self.parseLiteral(index, token, tokens, stack)
 		elif type(token)==Word:
-			skipVar = self.parseWord(index, token, tokens, stack)
+			return (0,0, self.parseWord(index, token, tokens, stack))
 		elif type(token)==Event:
 			self.parseEvent(stack)
 			return (1, 0, False)
@@ -344,6 +344,7 @@ class Parser:
 		return (0,0,False)
 	
 	def parse(self, tokens):
+		tokens = [t for t in tokens if t!=None]
 		stack = []
 		ast = ScopedAST()
 		scopeOpen = 0
@@ -360,37 +361,7 @@ class Parser:
 				scope, bracket, skipVar = self.parseToken(index, token, tokens, stack)
 				scopeOpen += scope
 				bracketOpen+= bracket
-				
-			# elif type(token)==Variable:# already processed in token type value
-				# self.parseVariable(index, tokens, stack)
-			# elif type(token)==Label:
-				# scopeOpen+=1
-				# self.parseLabel(stack)
-			# elif type(token)==Spell:
-				# self.parseSpell(stack)
-			# elif type(token)==Property:
-				# self.parseProperty(stack)
-			# elif type(token)==Call:
-				# self.parseCall(stack)
-			# elif type(token)==Value:
-				# skipVar = self.parseValue(index, token, tokens, stack)
-			# elif type(token)==Literal:
-				# self.parseLiteral(index, token, tokens, stack)
-			# elif type(token)==Word:
-				# skipVar = self.parseWord(index, token, tokens, stack)
-			# elif type(token)==Event:
-				# scopeOpen +=1
-				# self.parseEvent(stack)
-			# elif type(token)==Condition:
-				# scopeOpen +=2
-				# self.parseCondition(stack)
-			# elif type(token)==Chain_end:
-				# scopeOpen -= 1
-				# self.parseChainEnd(stack)
-			# elif type(token)==Bracket:
-				# bracketOpen += self.parseBracket(index, token, tokens, stack)
-			# elif type(token)==Operator:
-				# self.parseOperator(token, stack)
+		
 		while(len(stack)>1):
 			#collapse stack
 			node=stack.pop()
