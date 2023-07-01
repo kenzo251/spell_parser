@@ -1,5 +1,5 @@
 from Interpreter import Interpreter
-from Lexer import lexer
+from Lexer import Lexer
 from Parser import Parser
 
 if __name__=='__main__':
@@ -22,10 +22,12 @@ if __name__=='__main__':
 	: /*end of else branch*/
 :/*end of label scope*/
 	"""# explained version (see "parsable spell.txt"); comments do not appear in syntax tree
-	chain = "8_1!15%27 2!14%26cond°(true==false)call.:event#3!3%test$4!5%'test':5!5%(6$)$::" #version with minimal whitespace
-	chain = "(3! 4!)"
-	lexerTokens = lexer(chain)
+	# chain = "8_1!15%27 2!14%26cond°(true==false)call.:event#3!3%test$4!5%'test':5!5%(6$)$::" #version with minimal whitespace
+	# chain = "0f_ :"
+	lexer = Lexer()
 	parser = Parser()
+	
+	lexerTokens = lexer.lex(chain)
 	ast = parser.parse(lexerTokens)
 	ast.simplify()
 	ast.setParentRelations()
