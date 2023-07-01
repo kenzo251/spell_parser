@@ -1,6 +1,6 @@
 from Interpreter import Interpreter
 from Lexer import lexer
-from Parser import parser
+from Parser import Parser
 
 if __name__=='__main__':
 	chain = "8_ 1!15%27 2!14%26 cond°(3//2==2) call.: event# 3!3%test$ 4!5%'test' : 5!5%(6$)$: :" #dev (debug version)
@@ -25,7 +25,8 @@ if __name__=='__main__':
 	chain = "8_1!15%27 2!14%26cond°(true==false)call.:event#3!3%test$4!5%'test':5!5%(6$)$::" #version with minimal whitespace
 	chain = "1!br%true 1_ if°(br$) 1!1%1 : 1!2%2 3!1%1$ : : 1. 1!br%false 1."
 	lexerTokens = lexer(chain)
-	ast = parser(lexerTokens)
+	parser = Parser()
+	ast = parser.parse(lexerTokens)
 	ast.simplify()
 	ast.setParentRelations()
 	print(ast)
