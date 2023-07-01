@@ -118,8 +118,10 @@ class Interpreter():
 		condition = self.interpretNode(branch.condition[0])
 		subAst = AST()
 		if condition:
+			branch.BranchingState = False #set branchingState for variables
 			subAst.nodes = branch.branchIf
 		else:
+			branch.BranchingState = True
 			subAst.nodes = branch.branchElse
 		self.interpret(subAst)
 	

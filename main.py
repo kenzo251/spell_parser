@@ -273,8 +273,8 @@ def parseChainEnd(stack):
 		if type(stack[-1]) in [EventNode, LabelNode]:
 			stack.pop()
 		elif type(stack[-1])==BranchNode: #BranchNode
-			if not stack[-1].parserBranchingState:
-				stack[-1].parserBranchingState = True
+			if not stack[-1].BranchingState:
+				stack[-1].BranchingState = True
 			else:
 				stack.pop()
 	else:
@@ -500,14 +500,15 @@ if __name__=='__main__':
 :/*end of label scope*/
 	"""# explained version (see "parsable spell.txt"); comments do not appear in syntax tree
 	chain = "8_1!15%27 2!14%26cond°(true==false)call.:event#3!3%test$4!5%'test':5!5%(6$)$::" #version with minimal whitespace
-	chain = "1!1%1 1_ 1!push%1 1!pop%2 1!del%1: 1."
+	chain = "1!br%true 1_ if°(br$) 1!1%1 : 1!2%2 3!1%1$ : : 1. 1!br%false 1."
 	lexerTokens = lexer(chain)
 	ast = parser(lexerTokens)
 	ast.simplify()
 	ast.setParentRelations()
-	# print(ast)
+	print(ast)
 	interpreter = Interpreter()
 	interpreter.interpret(ast)
 	print(ast.vars)
-	print(ast.nodes[1].vars)
+	print(ast.nodes[1].nodes[0].varsIf)
+	print(ast.nodes[1].nodes[0].varsElse)
 	print(interpreter.stack)

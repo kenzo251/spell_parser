@@ -46,7 +46,7 @@ class AST():
 			raise RuntimeError(f"'{labelname}' is not defined")
 		return self.parent.findLabel(labelname)
 	
-	def setLabel(self, labelname, target):
+	def setLabel(self, labelname, target, canSet=True):
 		self.parent.setLabel(labelname, target)
 	
 	def nodeTypeInParents(self, nodetype, checkLoop=False):
@@ -105,8 +105,23 @@ class ScopedAST(AST):
 			raise RuntimeError(f"'{labelname}' is not defined")
 		return self.parent.findLabel(labelname)
 	
-	def setLabel(self, labelname, target):
-		self.labels[labelname]=target
+	def setLabel(self, labelname, target, canSet=True):
+		#first find if earlier occurence exists
+		if labelname in self.labels:
+			self.labels[varname]=target
+			return True
+		if self.parent==None:
+			if canSet:#check if root is candidate
+				self.labels[labelname]=target
+				return True #if yes, set and end further work
+			return False #root is not candidate
+		
+		earlier_occurence = self.parent.setLabel(labelname, target, False) # false because this node is earliest candidate, don't assign higher nodes as new candidates
+		if not earlier_occurence and canSet:
+			self.labels[labelname]=target
+			return True
+		else:
+			return earlier_occurence
 
 class PropertyNode(AST):
 	def __init__(self, id):
@@ -199,10 +214,14 @@ class BranchNode(ScopedAST): #note: has 2 scopes, needs to change later
 		self.condition = []
 		self.branchIf = []
 		self.branchElse = []
-		self.parserBranchingState = False
+		self.varsIf = {}
+		self.varsElse = {}
+		self.labelsIf = {}
+		self.labelsElse = {}
+		self.BranchingState = False
 	
 	def addNode(self, node):
-		if not self.parserBranchingState:
+		if not self.BranchingState:
 			self.branchIf.append(node)
 		else:
 			self.branchElse.append(node)
@@ -224,6 +243,67 @@ class BranchNode(ScopedAST): #note: has 2 scopes, needs to change later
 		for index, node in enumerate(self.branchElse):
 			self.branchElse[index] = node.simplify()
 		return self
+	
+	def findVar(self, varname):
+		varDict = self.varsElse if self.BranchingState else self.varsIf
+		if varname in varDict:
+			return varDict[varname]
+		if self.parent == None:
+			raise RuntimeError(f"variable referenced before assignment: {varname}")
+		return self.parent.findVar(varname)
+	
+	def setVar(self, varname, value, canSet=True):
+		#first find if earlier occurence exists
+		varDict = self.varsElse if self.BranchingState else self.varsIf
+		if varname in varDict:
+			varDict[varname]=value
+			return True
+		if self.parent==None:
+			if canSet:#check if root is candidate
+				varDict[varname]=value
+				return True #if yes, set and end further work
+			return False #root is not candidate
+		
+		earlier_occurence = self.parent.setVar(varname, value, False) # false because this node is earliest candidate, don't assign higher nodes as new candidates
+		if not earlier_occurence and canSet:
+			varDict[varname]=value
+			return True
+		else:
+			return earlier_occurence
+	
+	def delVar(self,varname):
+		varDict = self.varsElse if self.BranchingState else self.varsIf
+		if varname in varDict:
+			del varDict[varname]
+			return
+		self.parent.delVar(varname)
+	
+	def findLabel(self,labelname):
+		labelDict = self.labelsElse if self.BranchingState else self.labelsIf
+		if labelname in labelDict:
+			return labelDict[labelname]
+		if self.parent == None:
+			raise RuntimeError(f"'{labelname}' is not defined")
+		return self.parent.findLabel(labelname)
+	
+	def setLabel(self, labelname, target, canSet=True):
+		#first find if earlier occurence exists
+		labelDict = self.labelsElse if self.BranchingState else self.labelsIf
+		if labelname in labelDict:
+			labelDict[labelname]=target
+			return True
+		if self.parent==None:
+			if canSet:#check if root is candidate
+				labelDict[labelname]=target
+				return True #if yes, set and end further work
+			return False #root is not candidate
+		
+		earlier_occurence = self.parent.setLabel(labelname, target, False) # false because this node is earliest candidate, don't assign higher nodes as new candidates
+		if not earlier_occurence and canSet:
+			labelDict[labelname]=target
+			return True
+		else:
+			return earlier_occurence
 	
 	def setParentRelations(self):
 		for nodelist in [self.condition, self.branchIf, self.branchElse]:
