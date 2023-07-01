@@ -78,7 +78,7 @@ class Interpreter():
 					val = spell.findVar(value)
 					self.stack.append(val)
 				elif varname=="pop": #value interpreted as varname to write to
-					val = stack.pop()
+					val = self.stack.pop()
 					spell.setVar(value,val)#does not matter if var exists or not
 				elif varname=="del":#value interpreted as varname to delete
 					spell.delVar(value)

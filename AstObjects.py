@@ -94,7 +94,9 @@ class ScopedAST(AST):
 	
 	def delVar(self,varname):
 		if varname in self.vars:
-			del self.vars['varname']
+			del self.vars[varname]
+			return
+		self.parent.delVar(varname)
 	
 	def findLabel(self,labelname):
 		if labelname in self.labels:
