@@ -23,7 +23,7 @@ if __name__=='__main__':
 :/*end of label scope*/
 	"""# explained version (see "parsable spell.txt"); comments do not appear in syntax tree
 	# chain = "8_1!15%27 2!14%26cond°(true==false)call.:event#3!3%test$4!5%'test':5!5%(6$)$::" #version with minimal whitespace
-	# chain = "0f_ :"
+	chain = "f_ 2!2%null: 7!6%(f.)"
 	lexer = Lexer()
 	parser = Parser()
 	
@@ -34,4 +34,5 @@ if __name__=='__main__':
 	print(ast)
 	interpreter = Interpreter()
 	interpreter.interpret(ast)
-	print(interpreter.stack)
+	print(f"state: {interpreter.state}")
+	print(f"stack: {interpreter.stack}")

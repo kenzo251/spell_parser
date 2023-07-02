@@ -19,13 +19,18 @@ class Interpreter():
 		self.parent = None
 		self.state = States.Normal
 		self.stack = []
+		self.returnValue = None
 	
 	def interpret(self, tree):
 		for node in tree.nodes:
 			if self.state == States.Returning and (type(tree)==EventNode or (type(tree)==LabelNode and not (type(tree.id)==WordNode and tree.id.id=="loop"))):
 				self.state = States.Normal
-				return
+				return self.returnValue
 			ret = self.interpretNode(node)
+		#check for returning if last node is return
+		if self.state == States.Returning and (type(tree)==EventNode or (type(tree)==LabelNode and not (type(tree.id)==WordNode and tree.id.id=="loop"))):
+				self.state = States.Normal
+				return self.returnValue
 	
 	#at this point no brackets should exist anymore
 	def interpretNode(self, node):
@@ -43,7 +48,7 @@ class Interpreter():
 		elif type(node)==BranchNode:
 			self.interpretBranch(node)
 		elif type(node)==CallNode:
-			self.interpretCall(node)
+			return self.interpretCall(node)
 		elif type(node)==EventNode:
 			self.interpretEvent(node)
 		elif type(node)==OperatorNode:
@@ -95,6 +100,7 @@ class Interpreter():
 			elif presentedState == States.Returning:
 				if not spell.nodeTypeInParents(LabelNode, checkLoop=False) or spell.nodeTypeInParents(EventNode):
 					raise RuntimeError("invalid return statement")
+				self.returnValue = list(props.values())[0]
 			self.state = presentedState
 		else:
 			printSpell(id, props)
@@ -129,12 +135,9 @@ class Interpreter():
 		id = self.interpretNode(call.id)
 		l=call.findLabel(id)
 		print(f"interpreting for id {id}")#debug
-		self.interpret(l)
-		# if id in self.labels:
-			# print(f"interpreting for id {id}")
-			# self.interpret(self.labels[id]) # watch out for recursive loops
-		# else:
-			# print(f"raising exception, cannot call non existing method '{id}'")
+		temp = self.interpret(l)
+		self.returnValue = None
+		return temp
 	
 	def interpretEvent(self, event):
 		#register event, some external action should trigger event; therefore events don't need to be scope callable
