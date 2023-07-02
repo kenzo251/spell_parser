@@ -39,7 +39,14 @@ whitespace is ignored
 `1!{set of properties}` assigns variables with name being property id and value being property value
 variables are scoped
 
-`2!{state, see table}%{unused value}`
+|property id| action |
+|---|---|
+|push|push value or variable to the stack|
+|pop|pops value from the stack into a variable|
+|del|deletes the first occurence of a variable in the current scope|
+|anything else| assings a variable|
+
+`2!{state, see table}%{unused value}`[^1]
 
 |state|action|
 |---|---|
@@ -47,7 +54,8 @@ variables are scoped
 |2|return|
 |3|continue|
 
-currently numbers, will make this words later; return takes a value to return to the caller
+currently numbers, will make this words later
+[^1]: return takes a value to return to the caller
 
 ## loops
 loops can be defined with `loop_`
