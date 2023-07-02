@@ -147,7 +147,8 @@ class PropertyNode(AST):
 		if type(self.id)==LiteralNode:
 			raise SyntaxError("id cannot be literal node in script (but is allowed at runtime); i don't know how to word this error")
 		if type(self.nodes[0])==WordNode and self.nodes[0].id not in ['true','false','null']:#true, false, null exempt from invalid syntax
-			raise SyntaxError("value of property cannot be a WordNode (except true, false, null)")
+			if not (type(self.id)==WordNode and self.id.id == "pop" and type(self.nodes[0])==WordNode):
+				raise SyntaxError("value of property cannot be a WordNode (except true, false, null)")
 		for node in self.nodes:
 			node.verify()
 

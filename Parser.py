@@ -24,7 +24,7 @@ class Parser:
 	def parseVariable(self, index, tokens, stack):
 		node = VariableNode()
 		value = stack.pop()
-		if type(value) not in [EvaluationNode, ValueNode, LiteralNode]:
+		if type(value) not in [EvaluationNode, ValueNode, LiteralNode, WordNode]:
 			raise SyntaxError(f"cannot interpret {node} as variable")
 		node.addNode(value)
 		if type(stack[-1])==PropertyNode:
@@ -104,7 +104,7 @@ class Parser:
 	def parseLiteral(self, index, token, tokens, stack):
 		node = LiteralNode(token.value)
 		if type(stack[-1])==PropertyNode:
-			if type(tokens[index+1])!=Operator:
+			if index+1==len(tokens) or type(tokens[index+1])!=Operator:
 				stack[-1].addNode(node)
 				stack.pop()
 		else:
@@ -123,7 +123,7 @@ class Parser:
 		if type(stack[-1])==PropertyNode:
 			# add to property under special positional condition
 			# if next token is not an operator
-			if type(tokens[index+1])!=Operator:
+			if index+1==len(tokens) or type(tokens[index+1])!=Operator:
 				stack[-1].addNode(node)
 				stack.pop()
 		else:
@@ -187,6 +187,8 @@ class Parser:
 			elif index+1==len(tokens) or type(tokens[index+1]) not in [Operator, Variable, 
 				Spell, Property, Condition, Event, Label, Call]:
 				stack[-1].addNode(evaluation)
+				if type(stack[-1])==PropertyNode:#property completed
+					stack.pop()
 			else:
 				stack.append(evaluation)
 			return -1
@@ -363,7 +365,8 @@ class Parser:
 				scope, bracket, skipVar = self.parseToken(index, token, tokens, stack)
 				scopeOpen += scope
 				bracketOpen+= bracket
-			skipVar = False
+			else:#why does removing else give an error?
+				skipVar = False
 		
 		while(len(stack)>1):
 			node=stack.pop()

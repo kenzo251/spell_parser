@@ -23,7 +23,7 @@ if __name__=='__main__':
 :/*end of label scope*/
 	"""# explained version (see "parsable spell.txt"); comments do not appear in syntax tree
 	# chain = "8_1!15%27 2!14%26cond°(true==false)call.:event#3!3%test$4!5%'test':5!5%(6$)$::" #version with minimal whitespace
-	chain = "if°('true') 3!:4!:"
+	chain = "1!5%2 1!push%(5$) 1!pop%test"
 	lexer = Lexer()
 	parser = Parser()
 	

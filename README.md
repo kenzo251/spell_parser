@@ -47,15 +47,20 @@ variables are scoped
 |2|return|
 |3|continue|
 
-currently numbers, will make this words later
+currently numbers, will make this words later; return takes a value to return to the caller
 
 ## loops
 loops can be defined with `loop_`
 creates a while true loop, use break to end
+
+## 'keywords':
+all keywords are case sensitive  
+`true`  
+`false`  
+`null`
 
 ## inserting spells
 see main.py at the bottom, examples listed (varname "chain")
 
 ## running
 `python main.py`
-t is 

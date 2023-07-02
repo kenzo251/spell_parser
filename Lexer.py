@@ -132,4 +132,5 @@ class Lexer:
 			if self.lexerSubStep1(token, tokens):
 				continue
 			self.lexerSubStep2(token, tokens)
-		return tokens #None values get ignored in parser
+		tokens = [token for token in tokens if token != None]
+		return tokens 

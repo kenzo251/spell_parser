@@ -80,8 +80,8 @@ class Interpreter():
 		if id==1:
 			for varname, value in props.items():
 				if varname=="push":#value interpreted as varname to read from
-					val = spell.findVar(value)
-					self.stack.append(val)
+					#val = spell.findVar(value)
+					self.stack.append(propVal)
 				elif varname=="pop": #value interpreted as varname to write to
 					val = self.stack.pop()
 					spell.setVar(value,val)#does not matter if var exists or not
