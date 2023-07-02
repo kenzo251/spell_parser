@@ -20,6 +20,12 @@ class AST():
 		self.nodes.append(node)
 		node.parent = self
 	
+	def verify(self):
+		if hasattr(self, "id") and type(self.id)==LiteralNode:
+			raise SyntaxError("id cannot be literal node in script (but is allowed at runtime); i don't know how to word this error")
+		for node in self.nodes:
+			node.verify()
+	
 	def simplify(self):
 		for index, node in enumerate(self.nodes):
 			self.nodes[index] = node.simplify()
@@ -132,10 +138,18 @@ class PropertyNode(AST):
 		return f"Property({self.id.id}): "
 	
 	def simplify(self):
-		self. id = self.id.simplify()
+		self.id = self.id.simplify()
 		for index, node in enumerate(self.nodes):
 			self.nodes[index] = node.simplify()
 		return self
+	
+	def verify(self):
+		if type(self.id)==LiteralNode:
+			raise SyntaxError("id cannot be literal node in script (but is allowed at runtime); i don't know how to word this error")
+		if type(self.nodes[0])==WordNode and self.nodes[0].id not in ['true','false','null']:#true, false, null exempt from invalid syntax
+			raise SyntaxError("value of property cannot be a WordNode (except true, false, null)")
+		for node in self.nodes:
+			node.verify()
 
 class SpellNode(AST):
 	def __init__(self, id):
@@ -244,6 +258,15 @@ class BranchNode(ScopedAST): #note: has 2 scopes, needs to change later
 			self.branchElse[index] = node.simplify()
 		return self
 	
+	def verify(self):
+		if type(self.id)==LiteralNode:
+			raise SyntaxError("id cannot be literal node in script (but is allowed at runtime); i don't know how to word this error")
+		for node in self.branchIf:
+			node.verify()
+		for node in self.branchElse:
+			node.verify()
+		
+	
 	def findVar(self, varname):
 		varDict = self.varsElse if self.BranchingState else self.varsIf
 		if varname in varDict:
@@ -328,6 +351,7 @@ class LiteralNode(AST):
 	def simplify(self):
 		if len(self.nodes):
 			raise SyntaxError("literal cannot have children nodes")
+		self.id = self.id[1:-1]#removes start and end quotes
 		return self
 
 class ValueNode(AST):
