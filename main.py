@@ -29,9 +29,6 @@ if __name__=='__main__':
 	
 	lexerTokens = lexer.lex(chain)
 	ast = parser.parse(lexerTokens)
-	ast.simplify()
-	ast.verify()
-	ast.setParentRelations()
 	print(ast)
 	interpreter = Interpreter()
 	interpreter.interpret(ast)

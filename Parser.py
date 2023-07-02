@@ -343,6 +343,11 @@ class Parser:
 			self.parseOperator(token, stack)
 		return (0,0,False)
 	
+	def finalize(self,ast):
+		ast.simplify()
+		ast.verify()
+		ast.setParentRelations()
+	
 	def parse(self, tokens):
 		stack = []
 		ast = ScopedAST()
@@ -354,20 +359,19 @@ class Parser:
 		if len(tokens)>0 and type(tokens[-1]) == Literal and tokens[-1].value[0]!=tokens[-1].value[-1]:
 			raise SyntaxError("unclosed Literal")
 		for index, token in enumerate(tokens):
-			if skipVar:
-				skipVar = False
-			else:
+			if not skipVar:
 				scope, bracket, skipVar = self.parseToken(index, token, tokens, stack)
 				scopeOpen += scope
 				bracketOpen+= bracket
+			skipVar = False
 		
 		while(len(stack)>1):
-			#collapse stack
 			node=stack.pop()
 			if type(node) not in [SpellNode, PropertyNode]: #certain linger but are already attached
 				stack[-1].addNode(node)
 		if scopeOpen!=0:
-			raise SyntaxError(f"unmatched scope open {scopeOpen}")
+			raise SyntaxError("unmatched scope open")
 		if bracketOpen!=0:
 			raise SyntaxError("unmatched bracket open")
+		self.finalize(ast)
 		return ast
